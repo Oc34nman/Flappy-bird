@@ -1,4 +1,5 @@
 
+
 import pygame
 import random
 
@@ -9,7 +10,7 @@ pygame.display.set_caption("Flappy Bird")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 36)
 font2 = pygame.font.Font(None, 72)
-pipe_image = pygame.image.load('pipes.png').convert_alpha()
+pipe_image = pygame.image.load('pipes2.png').convert_alpha()
 
 
 score = 0
@@ -102,6 +103,7 @@ while running: #======================Game Loop+++++++++++++++++++++++++++++++++
     #render section---------------------------------------
     screen.fill((0, 0, 0))
    
+    screen.blit(background_image, (0,0))
     score_text = font.render("Score:", True, (255, 255, 255))
     screen.blit(score_text, (650, 20))
     score_text2 = font.render(str(score), True, (255, 255, 255))
@@ -121,3 +123,4 @@ screen.blit(text, (200, 200))
 pygame.display.flip()
 pygame.time.delay(2000)
 pygame.quit()
+
