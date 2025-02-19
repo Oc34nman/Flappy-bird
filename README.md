@@ -1,4 +1,4 @@
-# Flappy-bird
+
 import pygame
 import random
 
@@ -9,6 +9,7 @@ pygame.display.set_caption("Flappy Bird")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 36)
 font2 = pygame.font.Font(None, 72)
+pipe_image = pygame.image.load('pipes.png').convert_alpha()
 
 
 score = 0
@@ -19,7 +20,7 @@ score = 0
 class Bird:
     def __init__(self):
         self.y = 400
-        self.velocity = 0
+        self.velocity = 0 
 
     def flap(self):
         self.velocity = -3
@@ -31,6 +32,7 @@ class Bird:
     def draw(self):
         pygame.draw.rect(screen, (255, 0, 0), (50, self.y, 30, 30))
 
+    
 bird = Bird()
 
 class Pipe:
@@ -38,16 +40,22 @@ class Pipe:
         self.x = x
         self.height = random.randint(50, 400)
         self.gap = 150
+        self.top_pipe = pygame.transform.flip(pipe_image, False, True)
+        self.bottom_pipe = pipe_image
+        
 
     def move(self):
         self.x -= 2
 
     def draw(self):
+        top_height = self.height
+        bottom_height = 800 - (self.height + self.gap)
+        
         #top pipe
-        pygame.draw.rect(screen, (0, 225, 0), (self.x, 0, 50, self.height))
+        screen.blit(self.top_pipe, (self.x,top_height - self.top_pipe.get_height()))
         #bottom pipe
-        pygame.draw.rect(screen, (0, 225, 0), (self.x, self.height + self.gap, 50, 600 - (self.height + self.gap)))
-
+        screen.blit(self.bottom_pipe, (self.x, self.height + self.gap))
+        
 pipes = []
 spawn_pipe = 0
        
@@ -74,5 +82,42 @@ while running: #======================Game Loop+++++++++++++++++++++++++++++++++
         if event.type == pygame.MOUSEBUTTONDOWN:
             bird.flap()
            
+    bird.physics()
 
-           
+    spawn_pipe += 1
+    if spawn_pipe >= 150:
+        pipes.append(Pipe(800))
+        spawn_pipe = 0
+
+    for pipe in pipes:
+        pipe.move()
+        if check_collision(50, bird.y, pipe.x, pipe.height):
+            running = False
+
+    i = len(pipes) - 1
+    while i >= 0:
+        if pipes[i].x <= - 50:
+            pipes.pop(i)
+        i -= 1
+    #render section---------------------------------------
+    screen.fill((0, 0, 0))
+   
+    score_text = font.render("Score:", True, (255, 255, 255))
+    screen.blit(score_text, (650, 20))
+    score_text2 = font.render(str(score), True, (255, 255, 255))
+    screen.blit(score_text2, (750, 20))
+
+    bird.draw()
+
+    for pipe in pipes:
+        pipe.draw()
+
+    pygame.display.flip() 
+    
+#=========end loop====================================================
+
+text = font2.render("GAME OVER", True, (255, 50, 50))
+screen.blit(text, (200, 200))
+pygame.display.flip()
+pygame.time.delay(2000)
+pygame.quit()
